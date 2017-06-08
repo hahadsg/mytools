@@ -1,0 +1,5 @@
+.DS_Store
+
+# aws_tools
+aws_tools/fast-ai-remove.sh
+aws_tools/fast-ai-commands.txt
