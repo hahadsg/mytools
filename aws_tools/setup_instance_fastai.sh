@@ -52,16 +52,16 @@ aws ec2 authorize-security-group-ingress --group-id $securityGroupId --protocol 
 
 if [ ! -d ~/.ssh ]
 then
-	mkdir ~/.ssh
+    mkdir ~/.ssh
 fi
 
 if [ ! -f ~/.ssh/aws-key-$name.pem ]
 then
-	aws ec2 create-key-pair --key-name aws-key-$name --query 'KeyMaterial' --output text > ~/.ssh/aws-key-$name.pem
-	chmod 400 ~/.ssh/aws-key-$name.pem
+    aws ec2 create-key-pair --key-name aws-key-$name --query 'KeyMaterial' --output text > ~/.ssh/aws-key-$name.pem
+    chmod 400 ~/.ssh/aws-key-$name.pem
 fi
 
-export instanceId=$(aws ec2 run-instances --image-id $ami --count 1 --instance-type $instanceType --key-name aws-key-$name --security-group-ids $securityGroupId --subnet-id $subnetId --associate-public-ip-address --block-device-mapping "[ { \"DeviceName\": \"/dev/sda1\", \"Ebs\": { \"VolumeSize\": 30, \"VolumeType\": \"gp2\" } } ]" --query 'Instances[0].InstanceId' --output text)
+export instanceId=$(aws ec2 run-instances --image-id $ami --count 1 --instance-type $instanceType --key-name aws-key-$name --security-group-ids $securityGroupId --subnet-id $subnetId --associate-public-ip-address --block-device-mapping "[ { \"DeviceName\": \"/dev/sda1\", \"Ebs\": { \"VolumeSize\": 128, \"VolumeType\": \"gp2\" } } ]" --query 'Instances[0].InstanceId' --output text)
 aws ec2 create-tags --resources $instanceId --tags --tags Key=Name,Value=$name-gpu-machine
 export allocAddr=$(aws ec2 allocate-address --domain vpc --query 'AllocationId' --output text)
 
