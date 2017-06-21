@@ -65,6 +65,10 @@ export instanceId=$(aws ec2 run-instances --image-id $ami --count 1 --instance-t
 aws ec2 create-tags --resources $instanceId --tags --tags Key=Name,Value=$name-gpu-machine
 export allocAddr=$(aws ec2 allocate-address --domain vpc --query 'AllocationId' --output text)
 
+# copy pem
+cp ~/.ssh/aws-key-$name.pem ~/.ssh/aws-key-$instanceId.pem
+chmod 400 ~/.ssh/aws-key-$instanceId.pem
+
 echo Waiting for instance start...
 aws ec2 wait instance-running --instance-ids $instanceId
 sleep 10 # wait for ssh service to start running too
