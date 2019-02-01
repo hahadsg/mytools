@@ -1,6 +1,6 @@
 alias aws-get-p2='export instanceId=`aws ec2 describe-instances --filters "Name=instance-state-name,Values=stopped,Name=instance-type,Values=p2.xlarge" --query "Reservations[0].Instances[0].InstanceId"` && echo $instanceId'
-alias aws-get-t2='export instanceId=`aws ec2 describe-instances --filters "Name=instance-state-name,Values=stopped,Name=instance-type,Values=t2.xlarge" --query "Reservations[0].Instances[0].InstanceId"` && echo $instanceId'
-alias aws-get-t2micro='export instanceId=`aws ec2 describe-instances --filters "Name=instance-state-name,Values=stopped,Name=instance-type,Values=t2.micro" --query "Reservations[0].Instances[0].InstanceId"` && echo $instanceId'
+# alias aws-get-t2='export instanceId=`aws ec2 describe-instances --filters "Name=instance-state-name,Values=stopped,Name=instance-type,Values=t2.xlarge" --query "Reservations[0].Instances[0].InstanceId"` && echo $instanceId'
+# alias aws-get-t2micro='export instanceId=`aws ec2 describe-instances --filters "Name=instance-state-name,Values=stopped,Name=instance-type,Values=t2.micro" --query "Reservations[0].Instances[0].InstanceId"` && echo $instanceId'
 alias aws-start='aws ec2 start-instances --instance-ids $instanceId && aws ec2 wait instance-running --instance-ids $instanceId && export instanceIp=`aws ec2 describe-instances --filters "Name=instance-id,Values=$instanceId" --query "Reservations[0].Instances[0].PublicIpAddress"` && echo $instanceIp'
 alias aws-ip='export instanceIp=`aws ec2 describe-instances --filters "Name=instance-id,Values=$instanceId" --query "Reservations[0].Instances[0].PublicIpAddress"` && echo $instanceIp'
 alias aws-ssh='ssh -i ~/.ssh/aws-key-$instanceId.pem ubuntu@$instanceIp'
@@ -22,10 +22,11 @@ then
 fi
 
 if [[ `uname` == *"Darwin"* ]]
+# This is Mac.  Use open to open the notebook
 then
-    # This is Mac.  Use open to open the notebook
-    alias aws-nb='open http://$instanceIp:8888'
+    alias aws-conn-nb='aws-ip; lsof -ti:8157 | xargs kill -9; ssh -i ~/.ssh/aws-key-$instanceId.pem -f -N -L 8157:127.0.0.1:8888 ubuntu@$instanceIp'
+    alias aws-nb='aws-conn-nb; open https://localhost:8157'
 fi
 
 
-export instanceId=i-9aa9c282
+# export instanceId=i-9aa9c282
